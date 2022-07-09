@@ -38,7 +38,8 @@ jobs:
 
       - name: Run Forge tests
         run: |
-          forge test -vvv
+          forge test -vvvv -j > results.json
+          forge test -l
         id: test
 
       - name: Coverage
@@ -46,6 +47,11 @@ jobs:
           forge coverage --report lcov
         id: coverage
 
+      - name: Coverage
+        run: |
+          forge coverage --report debug
+        id: debug
+        
       - name: Create code coverage status for the current commit
         run: |
           curl "https://{GIT_USER}:${GIT_TOKEN}@api.github.com/repos/${ORG_NAME}/${PROJECT_NAME}/statuses/${COMMIT_SHA}" -d "{\"state\": \"pending\",\"target_url\": \"https://github.com/${ORG_NAME}/${PROJECT_NAME}/pull/${PULL_NUMBER}/checks?check_run_id=${RUN_ID}\",\"description\": \"in progress — This check has started... \",\"context\": \"code cov\"}"
